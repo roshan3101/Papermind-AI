@@ -103,37 +103,34 @@ async def _call_openrouter(messages: list[dict], model: str, temperature: float,
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
 async def _call_gemini(messages: list[dict], model: str, temperature: float, max_tokens: int) -> tuple[str, int]:
-    import google.generativeai as genai
-    genai.configure(api_key=settings.GEMINI_API_KEY)
+    from google import genai
+    from google.genai import types as gtypes
 
-    # Convert OpenAI-style messages to Gemini format
+    client = genai.Client(api_key=settings.GEMINI_API_KEY)
+
     system_parts = [m["content"] for m in messages if m["role"] == "system"]
-    history = []
-    last_user = ""
+    system_instruction = "\n\n".join(system_parts) if system_parts else None
+
+    # Build contents (non-system messages)
+    contents = []
     for m in messages:
         if m["role"] == "system":
             continue
-        if m["role"] == "user":
-            last_user = m["content"]
-        elif m["role"] == "assistant":
-            history.append({"role": "user", "parts": [last_user]})
-            history.append({"role": "model", "parts": [m["content"]]})
-            last_user = ""
+        role = "model" if m["role"] == "assistant" else "user"
+        contents.append(gtypes.Content(role=role, parts=[gtypes.Part(text=m["content"])]))
 
-    system_instruction = "\n\n".join(system_parts) if system_parts else None
-    gem_model = genai.GenerativeModel(
-        model_name=model,
+    config = gtypes.GenerateContentConfig(
+        temperature=temperature,
+        max_output_tokens=max_tokens,
         system_instruction=system_instruction,
-        generation_config=genai.GenerationConfig(
-            temperature=temperature,
-            max_output_tokens=max_tokens,
-        ),
     )
-    chat = gem_model.start_chat(history=history)
-    response = await chat.send_message_async(last_user)
+    response = await client.aio.models.generate_content(
+        model=model,
+        contents=contents,
+        config=config,
+    )
     text = response.text or ""
-    # Gemini doesn't always expose token counts in the same way
-    tokens = getattr(response.usage_metadata, "total_token_count", 0) if hasattr(response, "usage_metadata") else 0
+    tokens = response.usage_metadata.total_token_count if response.usage_metadata else 0
     return text, tokens
 
 
