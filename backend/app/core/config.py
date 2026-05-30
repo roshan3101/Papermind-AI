@@ -39,8 +39,8 @@ class Settings(BaseSettings):
     ANTHROPIC_MODEL: str = "claude-3-5-haiku-20241022"
 
     # Embeddings (Google text-embedding-004 via API — no local model needed)
-    EMBEDDING_MODEL: str = "models/text-embedding-004"
-    EMBEDDING_DIM: int = 768
+    EMBEDDING_MODEL: str = "gemini-embedding-001"
+    EMBEDDING_DIM: int = 3072
 
     # RAG
     CHUNK_SIZE: int = 512

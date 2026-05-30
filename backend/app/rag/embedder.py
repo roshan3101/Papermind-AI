@@ -8,13 +8,14 @@ from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 
-EMBED_MODEL = "text-embedding-004"
-EMBED_DIM = 768
+EMBED_MODEL = "gemini-embedding-001"
+EMBED_DIM = 3072
 
 
 @lru_cache(maxsize=1)
 def _client() -> genai.Client:
-    return genai.Client(api_key=settings.GEMINI_API_KEY)
+    # text-embedding-004 is only available on v1, not v1beta
+    return genai.Client(api_key=settings.GEMINI_API_KEY, http_options={"api_version": "v1"})
 
 
 def get_embedding_model():
