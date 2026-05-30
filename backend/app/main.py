@@ -15,10 +15,6 @@ async def lifespan(app: FastAPI):
     setup_logging(settings.DEBUG)
     logger.info("papermind_starting", version=settings.VERSION, provider=settings.LLM_PROVIDER)
 
-    # Pre-load embedding model
-    from app.rag.embedder import get_embedding_model
-    get_embedding_model()
-
     # Init FAISS store, rebuild from DB if empty (handles Render cold starts)
     from app.rag.vector_store import get_faiss_store
     from app.rag.index_rebuild import rebuild_faiss_from_db

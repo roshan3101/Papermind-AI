@@ -38,9 +38,9 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: Optional[str] = None
     ANTHROPIC_MODEL: str = "claude-3-5-haiku-20241022"
 
-    # Embeddings  (always local — no provider choice needed)
-    EMBEDDING_MODEL: str = "BAAI/bge-small-en-v1.5"
-    EMBEDDING_DIM: int = 384
+    # Embeddings (Google text-embedding-004 via API — no local model needed)
+    EMBEDDING_MODEL: str = "models/text-embedding-004"
+    EMBEDDING_DIM: int = 768
 
     # RAG
     CHUNK_SIZE: int = 512

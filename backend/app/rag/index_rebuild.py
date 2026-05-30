@@ -4,8 +4,7 @@ from sqlalchemy import select, text
 from app.core.logging import get_logger
 from app.db.session import AsyncSessionLocal
 from app.models.paper import PaperChunk
-from app.rag.embedder import get_embedding_model
-from app.rag.vector_store import get_faiss_store, FAISSStore
+from app.rag.vector_store import get_faiss_store
 import faiss
 
 logger = get_logger(__name__)
@@ -35,18 +34,9 @@ async def rebuild_faiss_from_db():
 
     logger.info("faiss_rebuilding", chunk_count=len(chunks))
 
-    model = get_embedding_model()
     texts = [c.content for c in chunks]
-
-    # Embed in batches to avoid OOM on free tier
-    batch_size = 64
-    all_embeddings = []
-    for i in range(0, len(texts), batch_size):
-        batch = texts[i : i + batch_size]
-        vecs = model.encode(batch, normalize_embeddings=True, show_progress_bar=False)
-        all_embeddings.append(vecs)
-
-    embeddings = np.vstack(all_embeddings).astype(np.float32)
+    from app.rag.embedder import embed_texts
+    embeddings = embed_texts(texts, batch_size=32)
 
     # Rebuild the index directly (bypass add_vectors to avoid per-batch saves)
     new_index = faiss.IndexFlatIP(store.dim)
