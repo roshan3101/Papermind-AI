@@ -36,15 +36,3 @@ services:
       - key: ALLOWED_ORIGINS
         sync: false   # set to your frontend URL after first deploy
 
-  # ── Frontend ─────────────────────────────────────────────────────────────────
-  - type: web
-    name: papermind-frontend
-    runtime: node
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    startCommand: npm start
-    envVars:
-      - key: NODE_VERSION
-        value: "20"
-      - key: NEXT_PUBLIC_API_URL
-        sync: false   # set to your backend URL, e.g. https://papermind-backend.onrender.com
