@@ -202,7 +202,3 @@ Query
    ↓ LLM generation with citation-aware prompt
    ↓ Return answer + CitationSource[] with page numbers
 ```
-
-## Resume Keywords
-
-Hybrid RAG · Citation-Aware Retrieval · FAISS Vector Search · Sentence Transformers · BGE Embeddings · FastAPI Async · SQLAlchemy 2.0 · Next.js 14 App Router · PyMuPDF · JWT Auth · PostgreSQL · LLM Applications · Research Intelligence
