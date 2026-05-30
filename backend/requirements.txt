@@ -15,7 +15,8 @@ python-jose[cryptography]>=3.3.0
 bcrypt>=4.0.0
 
 # Config & validation
-pydantic>=2.0.0
+pydantic[email]>=2.0.0
+email-validator>=2.0.0
 pydantic-settings>=2.0.0
 python-dotenv>=1.0.0
 
